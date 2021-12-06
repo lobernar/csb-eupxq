@@ -70,6 +70,7 @@ class Square {
 var SQUARE_SIZE = 5;
 var points = [];
 var squares = [];
+var input;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
