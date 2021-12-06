@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<head>
+    <title>Report</title>
+    <link rel="stylesheet" href="mystyle.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital@1&display=swap" rel="stylesheet"> 
+</head>
+<body>
+    <a href="index.html">Application</a>
+
+<div class="">
+ <p>Authors:
+    <ul>
+     <li>Andrea Gonzato: 000528431</li>
+     <li>Loïc Bernard: 000469510</li>
+    </ul>
+ </p>
+
+ <h1>Introduction</h1>
+ <p>In this report, we will present the Voronoi diagrams, 
+        their applications and how to compute them.
+    In particular, we will analyse how different types of
+         distances affect the shape of Voronoi diagrams. We will also
+         talk about L<sub>p</sub> norms and their inducted distances.
+    <br>
+    Finally, we will present the web application we developed that was used to do the analysis.
+ </p>
+
+ <h1>Voronoi diagrams</h1>
+  <p>
+        Voronoi diagrams are used in many fields of study such as in computational geometry for representing problems, in robotics for detecting an 
+        object or in geography for the study of patterns and urban settlements. When considering the Euclidean plane, such diagrams can be used to
+        solve problems such as the all-nearest-neighbors problem, the Euclidean minimum spanning tree problem, Knuth’s post-office problem, the
+        largest empty circle problem, and other seemingly unrelated problems in O(nlogn) time complexity for n sites, as shown by Shamos and Hoey [7].
+  </p>
+  <p>Voronoi diagrams are defined as a set of points or sites <i>S</i> which partition the plane into regions. For each site <i>p</i> there is a corresponding
+    region R(p, S), called a Voronoi cell, consisting of all points of the plane closer to p 
+    than to any other site. If there are n sites, there will be n regions containing one site per region.
+    There is another approach which consists of defining a Voronoi diagram using a set of bisecting curves, but in our 
+    case these diagrams are defined by a set of points. <br>
+    Of course the distance function is essential for the construction of the
+    Voronoi diagram, so using different functions will result in different diagrams. In [1] Chew and Drysdalc discussed Voronoi diagrams 
+    based on convex distance functions. Voronoi diagrams are defined by Dobrin [5] as follows:
+        <ul> 
+            <li>Voronoi regions should be path-connected</li>
+            <li>The union of the Voronoi regions should cover the whole plane</li>
+            <li>Any two bisector curves should intersect only finitely often</li>
+        </ul>
+        Some other properties of Voronoi diagrams are:
+        <ul>
+            <li> Each vertex has degree at least three and corresponds to 
+                        the intersection of the bisecting curves </li>
+            <li>Using Euler's formula, we can say that there are at most 2n-5 vertices and 3n-6 edges </li>
+        </ul>
+        Klein in [6] and [2] defined a new class of Voronoi diagrams called <i> abstract Voronoi diagrams</i>. He showed that such diagrams can be
+        computed without the last property. Later Mehlhorn, Meiser and Dúnlaing [3] proved that there is a O(nlogn) 
+        randomized algorithm for constructing (a subset of Klein's) abstract Voronoi diagrams. Unfortunately abstract Voronoi diagrams
+        are not based on a distance measure but on systems of simple curves which bisect the plane. So we will not talk about this family
+        of diargams.
+    </p>
+    <h3>Duality</h3>
+    <p> 
+        The dual problem of the Voronoi diagrams is
+         the Delaunay triangulation. 
+         The Delaunay triangulation for a given set P of discrete
+          points in a general position is a triangulation DT(P) 
+          such that no point in P is inside the circumcircle
+           of any triangle in DT(P).
+         <br>
+         We could use this triangulation to compute the corresponding Voronoi diagram. 
+         If two triangles share an edge in the Delaunay triangulation, their 
+         circumcenters are to be connected with an edge in the Voronoi diagram. This is 
+         done by finding a circle such that at least 3 points of the Delaunay triangulation are on it's border. 
+         If this is the case, then the center of the circle is a Voronoi vertex. 
+    </p>
+
+<h2>Nice metrics</h2>
+<p> Voronoi diagrams are usually computed using 
+    the euclidean distance but it is interesting
+     to see what happens when using another distance which respects some properties. Here we will only focus on <i>nice metrics</i>. To be nice, a metric <i>d</i> 
+     has to have the following properties:
+     <ol>
+         <li>the metric induces an Euclidean topology</li>
+         <li>the d-circles are bounded with respect to the Euclidean metric</li>
+         <li>given 2 points <i>a</i> and <i>c</i>, there exists a point <i>b</i> &ne; {a,c}, such that d(a,c)=d(a,b) + d(b,c)</li>
+         <li>The intersection of two bisector curves J(p, q), J(p, r) consists of only finitely
+            many connected components</li>
+    </ol>
+    Every distances inducted by an L<sub>p</sub> norm has those properties. Another example of a nice metric is the Moscow metric which is detailed in [4].
+    <br>
+    If d is a nice metric, then each region of the diagram are path connected and have a non-empty interior.
+</p>
+<p> 
+    The formula used to compute the L<sub>p</sub> norm in &reals;<sup>k</sup> is: (&sum;<sub>i=1</sub><sup>k</sup> |a<sub>i</sub>|<sup>p</sup>)<sup>1/p</sup> <br>
+    Given a norm (w), the inducted distance between two points (x and y)
+    always exists and
+     is defined as: d(x, y) = w (x-y) <br>
+    In the case where the user wants to compute the L<sub>&infin;</sub> norm, the formula used to compute the inducted distance between two points <i>x</i> and <i>y</i>
+    is the equivalent Chebyshev formula: max<sub>i&in;k</sub>(|x<sub>i</sub>-y<sub>i</sub>|).
+    
+</p>
+
+<h1>Algorithms</h1>
+    <p>There exist many algorithms to compute the Voronoi diagrams. We will focus on 2 of them and briefly mention
+        the divide and conquer technique.
+    </p>
+
+    <p>
+        Note that in this project, we implemented only the brute force algorithm because
+        we were not looking for performance but instead we analyzed how the different
+        types of distances influence the shape of the Voronoi diagrams.
+    </p>
+
+<h2>Brute force algorithm</h2>
+    <p>
+        The brute force algorithm runs in O(p*n) where p is the number of pixels and n is the number of sites. 
+    </p>
+    <p>The idea is pretty simple,
+        we go through every pixel, compute the nearest site and color it accordingly.
+        
+    </p>
+    <p>
+        We implemented a slightly different version of this brute force algorithm.
+         We grouped pixels by squares of dimension s (e.g s = 5)
+         in order to compute the nearest site of a group of the pixel instead
+         of for each pixel.
+        
+        With this approach the time complexity is: O((p/s&sup2;)*n).
+    </p>
+    
+    
+<h2>Fortune's algorithm</h2>
+    <p>The most famous algorithm to compute a Voronoi diagram
+         is called Fortune's algorithm which runs in O(nlogn) time complexity
+        where n is the number of sites. 
+        It is way more complex than the brute force algorithm and therefore difficult to understand. The idea behind it is to use:
+        <ul>
+            <li> a sweepline which sweeps the set of sites from top to bottom to separate the processed and unprocessed sites.</li>
+            <li> a beach line which creates a new parabolic arc every time the sweepline encounters a new site. These arcs grow
+                wider as the sweepline moves. It's purpose is to keep track of the break points (intersection of two arcs).</li>
+            <li> events to handle every time the sweepline meets a site or when a break point from the beachline occurs.</li>
+        </ul>
+    The needed data structures are the following:
+    <ul>
+        <li>a doubly connected edge list to keep track of the incomplete Voronoi diagram,</li>
+        <li>a binary tree for the state of the beachline, and</li>
+        <li>a priority queue for the events.</li> 
+    </ul>
+    Every time an event is handled, the doubly connected edge list and the queue are modified, and the algorithm halts when the queue is 
+    empty.
+    </p>
+
+<h2>Divide and conquer algorithm</h2>
+<p>
+There is another interesting approach which is the divide and
+ conquer approach introduced by Shamos and Hoey [7].
+ Unfortunately we could not use it because
+  it does not work with distances that are not convex.
+   But is nonetheless important to mention it because
+    it also runs in O(nlogn) time complexity.
+<br>
+<!--The main idea of this algorithm is to make a partition
+ of the space every time in 4 zones that are a retangular.
+  If all the extreme points of a zone has the same nearest site
+   then all the entire zone has as nearest site that one. 
+   If the previous condition is not meet then algorithm continue to devide the zone
+    by doing a 4-partition recursively. -->
+    The main idea of the algorithm is to divide the set of sites into 2 sets of the same
+    size, the left set and the right set. Once this is done, we compute the Voronoi 
+    diagram of the two sets V(L) and V(R) recursively and merge these.
+</p>
+<p>
+There are many different implementations and ideas for the divide and conquer technique, 
+another one is detailed by Smith, Trefftz and DeVries [8].
+
+</p>
+
+<h1>The App</h1>
+ <p>
+    To better explain how the different types of distances affect the Voronoi diagrams we developed
+         a <a href="index.html">web application</a> that you can use
+          and play with it.
+ </p>
+ <h3>How to use it</h3>
+ <p>
+    The user needs to enter a set of points and choose 
+    a definition of a distance to generate the Voronoi diagrams.
+ </p>
+
+ <p>
+    In order to choose a type of distance the user need to enter a value (p).
+    This value defines a distance inducted by the norm L<sub>p</sub>.
+    In the case the value entered as p is not valid
+    then its value will be 2 by default.
+    <br>
+    In order to give the set of points the user needs to click on the screen. He will see points of 
+    different colors appear on the screen which represent the sites of the Voronoi diagram. 
+    After that, by clicking on the central button the Voronoi diagram will be drawn.
+    In case the user wants to use the distance induced by the norm L<sub>&infin;</sub>,
+     instead of clicking on the central button he can use the "Chebyshev" button.
+ </p>
+
+ <h1>Analysis</h1>
+ <p>
+    To analyze the results, we created 17 random points and computed the Voronoi diagram using 
+    different L<sub>p</sub> norms. We used the Manhattan distance, the Euclidean distance
+     and the distance implied by norm L<sub>3</sub>. The results are shown in the images below.<br>
+    We can see that for the same set of points, different results occur.
+     One interesting observation is that when using the Euclidean distance,
+      every region is convex but this is not always true when using other type of distances.<br>
+    Another result is that for the Euclidean distance the Voronoi
+     edges are straight lines but for 
+    other cases, the edges are not straight.<br>
+    Note that for our tests we computed the Voronoi diagrams
+     using the brute force algorithm by grouping the pixels by squares
+      of size 3.
+</p>
+<figure>
+        <img src="img/L1.png" height=270 width=570>
+        <figcaption>Voronoi diagrams using Manhattan distance</figcaption>
+</figure>
+<figure>
+        <img src="img/l2.png" height=270 width=570>
+        <figcaption>Voronoi diagrams using Euclidean distance</figcaption>
+</figure>
+<figure>
+        <img src="img/l3.png" height=270 width=570>
+        <figcaption>Voronoi diagrams using distance induced by norm L<sub>3</sub></figcaption>
+</figure>
+
+
+<h1>Conclusion</h1>
+<p>
+    From what we observed in the analysis, we can say that, as stated before, the shape of the Voronoi
+    diagram changes depending on which distances was used. It is interesting to see how the curves
+    change from one formula to another.<br> 
+    Another exercice would be to take our idea and implement Fortune's algorithm to compute a more 
+    precise diagram than with our brute force approach. We could set the size of the squares to 1
+    but the computation would take a really long time since it has to go through every pixel. Unfortunately
+    the remaining time did not allow us to do that.
+</p>
+
+<h1>References</h1>
+<ol start="1">
+        <li> L. Paul Chew, Robert L. (Scot) Drysdalc. "Voronoi Diagrams Based on Convex Distance Functions". In: 1985.</li>
+        <li> Rolf Klein, Elmar Langetepe, and Zahra Nilforoushan. “Abstract Voronoi diagrams revisited”. In: 2008.</li>
+        <li> K. Mehlhorn, St. Meiser, and C. O’Dúnlaing. “On the Construction of Abstract Voronoi Diagrams”. In: 1991.</li>
+        <li> Rolf Klein. "Voronoi Diagrams in the Moscow Metric"</li>
+        <li> A. Dobrin. "A review of properties and variations of Voronoi diagrams" </li>
+        <li> R.Klein. "Concrete and Abstract Voronoi Diagrams". In: 1989. </li>
+        <li> M. I. Shamos and D. Hoey. "Closest-point problems". In: 1975. </li> 
+        <li> E. Smith, C. Trefftz and B. DeVries. "A Divide-and-Conquer Algorithm for Computing Voronoi Diagrams". In: 2020. </li>
+      </ol> 
+</div>
+
+</body>
+</html>
